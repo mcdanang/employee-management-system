@@ -16,6 +16,7 @@ spec:
         - name: employee-management-system
           # image: employee-management-system:1.0.0 # For Minikube
           image: gcr.io/proverbial-keel-439502-u6/employee-management-system:1.0.0 # For GKE
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           envFrom:
@@ -23,3 +24,21 @@ spec:
                 name: app-config
             - secretRef:
                 name: app-secrets
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: employee-management-system-service
+  # annotations:
+  #   cloud.google.com/load-balancer-type: "Internal" # Use "Internal" for internal load balancer or omit for external
+  #   cloud.google.com/neg: '{"exposed_ports": {"3000": {}}}'  # Use the port your application is listening on
+spec:
+  type: LoadBalancer
+  selector:
+    app: employee-management-system
+  ports:
+    - port: 80
+      targetPort: 3000      
+

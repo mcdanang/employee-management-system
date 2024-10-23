@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: "employees_db"
+
+---
+
+apiVersion: v1
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS employees (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        position VARCHAR(100) NOT NULL,
+        salary INTEGER NOT NULL
+    );
+
+    -- Add some sample data
+    INSERT INTO employees (name, position, salary) 
+    VALUES 
+        ('John Doe', 'Software Engineer', 75000),
+        ('Jane Smith', 'Product Manager', 85000);
+kind: ConfigMap
+metadata:
+  name: init-script
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secrets
+type: Opaque
+data:
+  DB_USER: cG9zdGdyZXM=      
+  DB_PASSWORD: cG9zdGdyZXM=  
+
+---

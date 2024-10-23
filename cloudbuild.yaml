@@ -1,0 +1,10 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '--platform', 'linux/amd64',  # Specify x86 architecture
+      '-t', 'gcr.io/YOUR_PROJECT_ID/employee-management-system:1.0.0',  # Update with your image path
+      '.'
+    ]
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/YOUR_PROJECT_ID/employee-management-system:1.0.0']  # Update with your image path
