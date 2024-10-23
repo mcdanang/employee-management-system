@@ -1,0 +1,27 @@
+{
+	"name": "employee-management-system",
+	"version": "1.0.0",
+	"description": "Employee Management System with Node.js and PostgreSQL",
+	"main": "src/app.js",
+	"scripts": {
+		"start": "node src/app.js",
+		"dev": "nodemon src/app.js"
+	},
+	"keywords": [],
+	"author": {
+		"name": "Muhamad Danang Priambodo",
+		"email": "mdanangpriambodo@gmail.com",
+		"url": "https://mcdanang.com/"
+	},
+	"license": "ISC",
+	"dependencies": {
+		"cors": "^2.8.5",
+		"dotenv": "^16.4.5",
+		"express": "^4.21.1",
+		"express-validator": "^7.2.0",
+		"pg": "^8.13.0"
+	},
+	"devDependencies": {
+		"nodemon": "^3.1.7"
+	}
+}
