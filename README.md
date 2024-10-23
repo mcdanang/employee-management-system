@@ -50,7 +50,9 @@ POSTGRES_PASSWORD=postgres
 POSTGRES_DB=employees_db
 ```
 
-4. Initialize the database:
+Use `DB_HOST=localhost` in the .env file for local development.
+
+1. Initialize the database:
 ```bash
 psql -U postgres
 CREATE DATABASE employees_db;
@@ -58,7 +60,7 @@ CREATE DATABASE employees_db;
 \i scripts/init.sql
 ```
 
-5. Start the application:
+1. Start the application:
 ```bash
 npm run dev
 ```
