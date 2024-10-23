@@ -36,14 +36,18 @@ cd employee-management-system
 npm install
 ```
 
-3. Create a `.env` file:
+3. Create a `.env` and `.env.prod` file:
 ```env
-DB_HOST=localhost
+DB_HOST=db
 DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_NAME=employees_db
 PORT=3000
+
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=employees_db
 ```
 
 4. Initialize the database:
@@ -110,40 +114,12 @@ eval $(minikube docker-env)
 docker build -t employee-management-system:1.0.0 .
 ```
 
-3. Create ConfigMap and Secret:
-```yaml
-# k8s/configmap.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: app-config
-data:
-  DB_HOST: "postgres-service"
-  DB_PORT: "5432"
-  DB_NAME: "employees_db"
-
-# k8s/secrets.yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: app-secrets
-type: Opaque
-data:
-  DB_USER: cG9zdGdyZXM=      # postgres in base64
-  DB_PASSWORD: cG9zdGdyZXM=  # postgres in base64
-```
-
-4. Create database initialization ConfigMap:
+3. Apply Kubernetes manifests:
 ```bash
-kubectl create configmap init-script --from-file=init.sql=./scripts/init.sql
+kubectl apply -f k8s_minikube/
 ```
 
-5. Apply Kubernetes manifests:
-```bash
-kubectl apply -f k8s/
-```
-
-6. Access the application:
+4. Access the application:
 ```bash
 minikube service employee-management-system-service
 ```
@@ -157,6 +133,9 @@ gcloud services enable container.googleapis.com
 
 # Enable Container Registry API
 gcloud services enable containerregistry.googleapis.com
+
+# Enable Cloud Build API
+gcloud services enable cloudbuild.googleapis.com
 ```
 
 2. Create a GKE cluster:
@@ -172,25 +151,31 @@ gcloud container clusters create my-cluster \
 gcloud container clusters get-credentials my-cluster --zone=asia-southeast1-a --project=YOUR_PROJECT_ID
 ```
 
-4. Build and push Docker image to Google Container Registry:
-```bash
-# Tag the image
-docker build -t gcr.io/YOUR_PROJECT_ID/employee-management-system:1.0.0 .
-
-# Push to GCR
-docker push gcr.io/YOUR_PROJECT_ID/employee-management-system:1.0.0
-```
-
-5. Update app-deployment.yaml:
+4. Build and push Docker image using Cloud Build:
+   
+Create a cloudbuild.yaml file in the root of your repository with the following content:
 ```yaml
-# k8s/app-deployment.yaml
-# Update the image to use GCR
-image: gcr.io/YOUR_PROJECT_ID/employee-management-system:1.0.0
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '--platform', 'linux/amd64',  # Specify x86 architecture
+      '-t', 'gcr.io/YOUR_PROJECT_ID/employee-management-system:1.0.0',  # Update with your image path
+      '.'
+    ]
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/YOUR_PROJECT_ID/employee-management-system:1.0.0']  # Update with your image path
+```
+Replace `YOUR_PROJECT_ID` with your actual Google Cloud project ID.
+
+5. Trigger the build:
+```bash
+gcloud builds submit --config cloudbuild.yaml .
 ```
 
 6. Apply Kubernetes manifests:
 ```bash
-kubectl apply -f k8s/
+kubectl apply -f k8s_gke/
 ```
 
 7. Get the external IP:
