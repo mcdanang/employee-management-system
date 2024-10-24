@@ -231,6 +231,8 @@ gcloud builds submit --config cloudbuild.yaml .
 kubectl apply -f k8s_gke/
 kubectl get services  # Get external IP
 ```
+My deployment on GKE can be accessed on this URL:
+[View Deployment](http://34.143.167.122/)
 
 ## Environment Variables
 
