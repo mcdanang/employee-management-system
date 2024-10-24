@@ -42,7 +42,6 @@ spec:
             name: init-script
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
